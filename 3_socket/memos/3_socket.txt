@@ -1,0 +1,103 @@
+---------------------------------------------------------------------------------
+
+HTML5 웹소켓
+=> 하위 브라우져 지원이 미흡
+=> UDP 기반으로 사용이 불가
+
+RFC: 표준화문서를 의미
+
+---------------------------------------------------------------------------------
+
+브라우져 개발자 도구 확인시 ResponseHeader에서
+아래의 항목을 확인해 소켓통신인지 판별가능
+
+- connection
+- upgrade
+
+---------------------------------------------------------------------------------
+
+방이 한개인 브로드 캐스트 웹소켓 서버
+=> 서버는 ws 패키지를 사용
+
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({ port: 5000 });
+
+wss.on("connection", (ws) => {
+    const broadCastHandler = (msg) => {
+        wss.clients.forEach(function each(client, i) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(msg);
+            }
+        });
+    };
+
+    ws.on("message", (res) => {
+        const { type, data, id } = JSON.parse(res);
+        switch (type) {
+            case "id":
+                broadCastHandler(
+                    JSON.stringify({ type: "welcome", data: data })
+                );
+                break;
+            case "msg":
+                broadCastHandler(
+                    JSON.stringify({ type: "other", data: data, id: id })
+                );
+                break;
+            default:
+                break;
+        }
+    });
+
+    ws.on("close", () => {
+        console.log("client has disconnected");
+    });
+});
+
+---------------------------------------------------------------------------------
+
+클라이언트는 아래의 구문을 컴포넌트 밖에 입력
+
+// 웹소켓 생성
+const webSocket = new WebSocket('ws://localhost:5000');
+
+// 이벤트 핸들러 부착
+webSocket.onopen = function () {
+  console.log('open', webSocket.protocol);
+};
+
+webSocket.onmessage = function (e) {
+  const { data, id, type } = JSON.parse(e.data);
+  setMsgList((prev) => [
+    ...prev,
+    {
+      msg: type === 'welcome' ? `${data} joins the chat` : data,
+      type: type,
+      id: id,
+    },
+  ]);
+};
+    
+webSocket.onclose = function () {
+  console.log('close');
+};
+
+// 메시지 송신
+webSocket.send(JSON.stringify({ type, data }))
+
+
+messagesEndRef => scrollIntoView를 위함
+msg => 인풋
+msgList
+
+userId
+isLogin
+
+
+메시지는 아래의 타입으로 구성
+
+type, data
+
+ id, msg
+
+---------------------------------------------------------------------------------

@@ -1,0 +1,61 @@
+---------------------------------------------------------------------------------
+
+> npm install socket.io
+
+// 서버 객체 생성
+const { Server } = require('socket.io');
+
+const io = new Server('5000', {
+  cors: {
+    origin: 'http://localhost:3000',
+  },
+});
+
+// 이벤트 등록
+io.sockets.on('connection', (socket) => {
+  socket.on('message', (data) => {
+    io.sockets.emit('sMessage', data);
+  });
+  socket.on('login', (data) => {
+    io.sockets.emit('sLogin', data);
+  });
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
+
+---------------------------------------------------------------------------------
+
+/* IOchat-broadcast */
+ws와 달리 socket.io를 쓴다면 브로드캐스팅이 자체적으로 지원된다
+
+socket.broadcast.emit('sMessage', data)
+
+---------------------------------------------------------------------------------
+
+/* IOchat-private */
+
+// 임시 db 생성 (userID => socket.id)
+  const clients = new Map();
+
+// 로그인시 등록
+  clients.set(data, socket.id);
+
+---------------------------------------------------------------------------------
+
+/* room_v2 */
+
+// 로그인 이벤트 들어오면 소켓을 방에 참가
+  socket.join(roomNumber)
+
+// socket.rooms로 속한 room을 알 수 있다.
+// 소켓이 생성되면 기본적으로 해당 socketId에 대응되는 방을 가진다. (최소 1)
+
+  const myRooms = Array.from(socket.rooms);
+  if (myRooms.length > 1) {
+    socket.broadcast.in(myRooms[1]).emit('sMessage', res);
+  } else {
+    socket.broadcast.emit('sMessage', res);
+  }
+
+---------------------------------------------------------------------------------

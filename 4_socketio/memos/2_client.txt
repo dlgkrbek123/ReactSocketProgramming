@@ -1,0 +1,43 @@
+---------------------------------------------------------------------------------
+
+import { io } from 'socket.io-client';
+const webSocket = io('http://localhost:5000');
+
+// 이벤트 추가
+webSocket.on('sLogin', (msg) => {
+  setMsgList((prev) => [
+    ...prev,
+    {
+      msg: `${msg} joins the chat`,
+      type: 'welcome',
+      id: '',
+    },
+  ]);
+});
+webSocket.off('sLogin', func);
+
+// 메시지 보내기
+webSocket.emit('login', userId);
+
+---------------------------------------------------------------------------------
+
+/* IOchat-private */
+  // private를 위한 state 추가
+  const [privateTarget, setPrivateTarget] = useState('');
+
+  // 메시지 리스트에 data-id를 추가
+  const onSetPrivateTarget = (e) => {
+    const { id } = e.target.dataset;
+    setPrivateTarget((prev) => (prev === id ? '' : id));
+  };
+
+---------------------------------------------------------------------------------
+
+/* room_v2 */
+  // 방번호 state 추가
+  const [roomNumber, setRoomNumber] = useState('1');
+
+  // 로그인 클릭시 아래와 같이 roomNumber 추가
+  webSocket.emit('login', { userId: userId, roomNumber: roomNumber });
+
+---------------------------------------------------------------------------------
