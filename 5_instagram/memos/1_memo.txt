@@ -1,0 +1,34 @@
+---------------------------------------------------------------------------------
+
+nodemon : 소스가 바뀔때마다 쉽게 서버를 재시작
+
+// package.json => scripts에 추가
+"start": "nodemon server.js"
+
+// commonjs에서의 모듈화 작업, 
+// require를 통해 named import됨 => default가 아님
+module.exports.posts = []
+
+---------------------------------------------------------------------------------
+
+// socket.io의 미들웨어를 설정가능 => connection시점에 한번만 실행
+// 미들웨어란 기본 로직 이전에 먼저 실행되는 함수
+// 로그, auth등에 활용
+io.use((socket, next) => {
+  const userName = socket.handshake.auth.userName;
+
+  if (!userName) {
+    console.log('err');
+    return next(new Error('invalid userName'));
+  }
+
+  socket.userName = userName;
+  next();
+});
+
+---------------------------------------------------------------------------------
+
+페이지를 넘어서는 변수를 사용하기 위해
+전역 변수 API인 context를 사용
+
+---------------------------------------------------------------------------------
