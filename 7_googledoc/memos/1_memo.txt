@@ -1,0 +1,59 @@
+---------------------------------------------------------------
+
+스키마 : 데이터의 자료구조와 연관관계를 기술한 메타데이터
+       아래의 3가지 요소로 구성된다.
+
+개체 (entity)
+속성 (attribute)
+관계 (relation)
+
+---------------------------------------------------------------
+
+@emotion/react : css 스타일을 위한 라이브러리
+lodash-es : 유틸리티
+
+react-quill  : wyswyg 에디터
+quill-cursors: 멀티커서
+
+@craco/craco : creact-react-app-configuration-override
+               eject하지 않고 cra 옵션을 쉽게 설정가능
+
+package.json => scripts 부분을 craco로 수정
+
+---------------------------------------------------------------
+
+> npm install @emotion/react lodash-es quill-cursors react-router-dom socket.io-client uuid react-quill
+> npm install -D @craco/craco @emotion/babel-preset-css-prop
+
+-D 옵션으로 설치시 devDependencies에 추가되어 production 배포시에 빌드되는 파일에 포함되지 않음
+
+---------------------------------------------------------------
+
+//정의
+import { css } from "@emotion/react"
+
+export const container = css`
+  스타일 기입
+`
+
+// 적용
+<div css={container}></div>
+
+---------------------------------------------------------------
+
+디바운스 => 연속해서 발생하는 이벤트를 모아서 한번에 처리 (자동완성, 브라우저 리사이징)
+스로틀링 => 연속해서 발생하는 이벤트를 특정 주기에 한번만 처리 (스크롤)
+
+---------------------------------------------------------------
+
+import { v4 as uuidV4 } from 'uuid';
+import {  Navigate } from 'react-router-dom';
+
+uuidV4(); // 랜덤 uuid 리턴
+<Route
+  path="/"
+  element={<Navigate replace to={`/documents/${uuidV4()}`} />}
+/>
+// 리다이렉트 설정
+
+---------------------------------------------------------------
