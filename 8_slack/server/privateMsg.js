@@ -46,16 +46,24 @@ const init = (io) => {
       }
     });
 
-    //
+    // 클라이언트에서 초대 호출
     socket.on('reqJoinRoom', async ({ targetId, targetSocketId }) => {
-      // 유저랑 socketId 받아라
+      let privateRoom = await getRoomDocument(targetId, socket.userId);
 
-      io.of('/private')
-        .to(targetSocketId)
-        .emit('msg-alert', { roomNumber: privateRoom });
+      if (!privateRoom) {
+        privateRoom = await findOrCreateRoomDocument(
+          `${targetId}-${socket.userId}`
+        );
+      }
+
+      // 자기는 방에 접속
+      // 상대측에 메시지 보내서 join 유도
+      const roomNumber = privateRoom._id;
+      socket.join(roomNumber);
+      io.of('/private').to(targetSocketId).emit('msg-alert', { roomNumber });
     });
 
-    // 초대받은 클라이언트가 호출해서 join
+    // msg-alert받은쪽에서 호출하여 방에 참가
     socket.on('resJoinRoom', (res) => socket.join(res));
   });
 };
